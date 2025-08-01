@@ -14,7 +14,18 @@ function getComputerChoice() {
 }
 
 function getUserChoice() {
-    return prompt("Rock, paper, scissors?");
+    let userChoice = prompt("Rock, paper, scissors?")
+    switch(userChoice) {
+        case 'rock':
+        case 'paper':
+        case 'scissors':
+            break;
+
+        default:
+            userChoice = 'rock';
+    }
+
+    return userChoice;
 }
 
 
