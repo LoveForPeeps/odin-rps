@@ -1,6 +1,8 @@
 let playerScore = 0;
 let computerScore = 0;
 
+let cooldown = false;
+
 function firstCharToUpper(string) {
     return string.at(0).toUpperCase() + string.slice(1)
 }
@@ -73,6 +75,12 @@ function playRound(humanChoice, computerChoice) {
 
 playerOptions.addEventListener('click', (event) => {
     const target = event.target
+
+    if (cooldown) {
+        return
+    }
+
+    cooldown = true;
     switch(target.id) {
         case 'rock':
         case 'paper':
@@ -95,4 +103,8 @@ playerOptions.addEventListener('click', (event) => {
             updateDisplays();
             break;
     }
+
+    setTimeout(() => {
+        cooldown = false;
+    }, 500);
 })
