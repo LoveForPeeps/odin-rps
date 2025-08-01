@@ -1,5 +1,9 @@
-let userScore = 0;
+let playerScore = 0;
 let computerScore = 0;
+
+function firstCharToUpper(string) {
+    return string.at(0).toUpperCase() + string.slice(1)
+}
 
 function getComputerChoice() {
     let choice = Math.ceil(Math.random() * 3);
@@ -13,58 +17,82 @@ function getComputerChoice() {
     }
 }
 
-function getUserChoice() {
-    let userChoice = prompt("Rock, paper, scissors?")
-    switch(userChoice) {
-        case 'rock':
-        case 'paper':
-        case 'scissors':
-            break;
+const playerScoreDisplay = document.querySelector("#player-score")
+const computerScoreDisplay = document.querySelector("#computer-score")
+const winDisplay = document.querySelector('#win-display')
 
-        default:
-            userChoice = 'rock';
+function getWinner(humanChoice, computerChoice) {
+    if (humanChoice === "rock" && computerChoice != "paper") {
+        return 'player';
+    } else if (humanChoice === "paper" && computerChoice != "scissors") {
+        return 'player';
+    } else if (humanChoice === "scissors" && computerChoice != "rock") {
+        return 'player';
+    } else {
+        return 'computer';
     }
-
-    return userChoice;
 }
 
+const playerOptions = document.querySelector('#options')
+
+const replayButton = document.createElement('button')
+replayButton.textContent = 'Replay?'
+replayButton.id = 'replay'
+
+function updateDisplays() {
+    playerScoreDisplay.textContent = playerScore
+    computerScoreDisplay.textContent = computerScore
+    if (playerScore >= 5) {
+        winDisplay.textContent = `You Won with a score of ${playerScore} - ${computerScore}!`
+        playerOptions.appendChild(replayButton);
+    } else if (computerScore >= 5) {
+        winDisplay.textContent = `You lost with a score of ${playerScore} - ${computerScore}..`
+        playerOptions.appendChild(replayButton);
+    }
+}
 
 function playRound(humanChoice, computerChoice) {
     humanChoice = humanChoice.toLowerCase();
 
     if (humanChoice === computerChoice) {
-        console.log(`Its a tie! You both picked ${humanChoice}.`);
+        winDisplay.textContent = `It's a tie! You both picked ${firstCharToUpper(humanChoice)}.`;
         return;
     }
 
-    if (humanChoice === "rock" && computerChoice != "paper") {
-        console.log(`You won! Rock beat ${computerChoice}.`)
-    } else if (humanChoice === "paper" && computerChoice != "scissors") {
-        console.log(`You won! Paper beat ${computerChoice}.`)
-    } else if (humanChoice === "scissors" && computerChoice != "rock") {
-        console.log(`You won! Scissors beat ${computerChoice}.`)
+    const winner = getWinner(humanChoice, computerChoice)
+    if (winner === "player") {
+        playerScore++;
+        winDisplay.textContent = `You won! ${firstCharToUpper(humanChoice)} beat ${firstCharToUpper(computerChoice)}.`;
     } else {
-        console.log(`You lost! ${humanChoice} loses to ${computerChoice}.`);
-        computerScore++;
-        return;
+        computerScore++
+        winDisplay.textContent = `You lost.. ${firstCharToUpper(humanChoice)} loses to ${firstCharToUpper(computerChoice)}.`;
     }
 
-    userScore++;
+    updateDisplays();
 }
 
+playerOptions.addEventListener('click', (event) => {
+    const target = event.target
+    switch(target.id) {
+        case 'rock':
+        case 'paper':
+        case 'scissors':
+            if (computerScore >= 5 || playerScore >= 5) {
+                return;
+            }
+            const computerChoice = getComputerChoice()
 
-function playGame() {
-    for (let i=1; i<=5; i++) {
-        playRound(getUserChoice(), getComputerChoice());
+            playRound(target.id, computerChoice)
+            break;
+
+        case 'replay':
+            playerScore = 0;
+            computerScore = 0;
+
+            winDisplay.textContent = ""
+
+            event.target.remove();
+            updateDisplays();
+            break;
     }
-
-    if (userScore > computerScore) {
-        console.log(`You Won! Score: ${userScore}:${computerScore}`);
-    } else if (userScore < computerScore) {
-        console.log(`You Lost. Score: ${userScore}:${computerScore}`);
-    } else {
-        console.log(`It's a tie!`);
-    }
-}
-
-playGame();
+})
